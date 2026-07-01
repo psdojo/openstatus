@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy OpenStatus
 
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
 
-      - name: Deploy
+      - name: Deploy to EC2
         run: |
           ssh \
             -i ~/.ssh/id_ed25519 \
@@ -25,6 +25,10 @@ jobs:
             -o UserKnownHostsFile=/dev/null \
             ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
               cd ~/openstatus
-              git pull
-              docker compose up -d --build
+
+              docker compose pull
+
+              docker compose up -d
+
+              docker image prune -f
             '
